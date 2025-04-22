@@ -23,34 +23,47 @@ st.title("📈 Real-Time Bitcoin Avg Price Visualization")
 
 # Function to fetch latest data
 def get_latest_data():
-    data = sheet.get_all_records()
-    df = pd.DataFrame(data)
+data = sheet.get_all_records()
+df = pd.DataFrame(data)
 
-    # Convert the timestamp from tuple to datetime
-    df['timestamp'] = df['timestamp'].apply(lambda x: datetime(eval(*x)))  # Convert tuple to datetime
-    df['avg_price'] = pd.to_numeric(df['avg_price'], errors='coerce')
-    
-    return df.tail(120)  # Keep only latest 120 points
+    # Convert tuple-like timestamps to datetime
+    def convert_timestamp(val):
+        if isinstance(val, str):
+            try:
+                return pd.to_datetime(val)
+            except:
+                return pd.NaT
+        elif isinstance(val, tuple) or isinstance(val, list):
+            try:
+                return datetime(*val)
+            except:
+                return pd.NaT
+        else:
+            return pd.NaT
+
+    df['timestamp'] = df['timestamp'].apply(convert_timestamp)
+    # Convert 'timestamp' tuple to datetime
+    df['timestamp'] = df['timestamp'].apply(lambda x: datetime(*eval(x)))
+    # 'avg_price' is already expected to be numeric
+df['avg_price'] = pd.to_numeric(df['avg_price'], errors='coerce')
+
+    df = df.dropna(subset=['timestamp', 'avg_price'])
+return df.tail(120)  # Keep only latest 120 points
 
 # Real-time plotting
 plot_placeholder = st.empty()
 
 while True:
-    df = get_latest_data()
+df = get_latest_data()
 
-    with plot_placeholder.container():
-        st.subheader("Live Plot (Last 120 points)")
-        
-        fig, ax = plt.subplots(figsize=(10, 4))
-        ax.plot(df['timestamp'], df['avg_price'], color='blue', linewidth=2)
-        ax.set_xlabel("Timestamp")
-        ax.set_ylabel("Average Price")
-        ax.set_title("Bitcoin Avg Price (Real-Time)")
-        ax.grid(True)
+with plot_placeholder.container():
+st.subheader("Live Plot (Last 120 points)")
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.plot(df['timestamp'], df['avg_price'], color='blue', linewidth=2)
+ax.set_xlabel("Timestamp")
+ax.set_ylabel("Average Price")
+ax.set_title("Bitcoin Avg Price (Real-Time)")
+ax.grid(True)
+st.pyplot(fig)
 
-        # Dynamically adjust y-axis limits based on data range
-        ax.set_ylim(df['avg_price'].min() - 100, df['avg_price'].max() + 100)  # Add some margin
-
-        st.pyplot(fig)
-
-    time.sleep(5)  # Update every 5 seconds
+time.sleep(5)  # Update every 5 seconds
