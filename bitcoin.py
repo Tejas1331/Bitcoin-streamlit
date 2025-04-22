@@ -25,26 +25,10 @@ st.title("📈 Real-Time Bitcoin Avg Price Visualization")
 def get_latest_data():
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
-
-    # Convert tuple-like timestamps to datetime
-    def convert_timestamp(val):
-        if isinstance(val, str):
-            try:
-                return pd.to_datetime(val)
-            except:
-                return pd.NaT
-        elif isinstance(val, tuple) or isinstance(val, list):
-            try:
-                return datetime(*val)
-            except:
-                return pd.NaT
-        else:
-            return pd.NaT
-
-    df['timestamp'] = df['timestamp'].apply(convert_timestamp)
+    # Convert 'timestamp' tuple to datetime
+    df['timestamp'] = df['timestamp'].apply(lambda x: datetime(*eval(x)))
+    # 'avg_price' is already expected to be numeric
     df['avg_price'] = pd.to_numeric(df['avg_price'], errors='coerce')
-
-    df = df.dropna(subset=['timestamp', 'avg_price'])
     return df.tail(120)  # Keep only latest 120 points
 
 # Real-time plotting
