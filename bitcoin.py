@@ -27,7 +27,7 @@ def get_latest_data():
     df = pd.DataFrame(data)
 
     # Convert the timestamp from tuple to datetime
-    df['timestamp'] = df['timestamp'].apply(lambda x: datetime(*x))  # Convert tuple to datetime
+    df['timestamp'] = df['timestamp'].apply(lambda x: datetime(eval(*x)))  # Convert tuple to datetime
     df['avg_price'] = pd.to_numeric(df['avg_price'], errors='coerce')
     
     return df.tail(120)  # Keep only latest 120 points
