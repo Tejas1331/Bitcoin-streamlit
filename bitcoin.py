@@ -48,7 +48,7 @@ while True:
         ax.grid(True)
 
         # Dynamically adjust y-axis limits based on data range
-        ax.set_ylim(df['avg_price'].min(), df['avg_price'].max())  # Add some margin for better visibility
+        ax.set_ylim(df['avg_price'].min()-20, df['avg_price'].max()+20)  # Add some margin for better visibility
 
         st.pyplot(fig)
 
