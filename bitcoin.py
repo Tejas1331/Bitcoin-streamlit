@@ -4,6 +4,7 @@ import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # Set Streamlit page config
 st.set_page_config(page_title="Real-time Bitcoin Data", layout="wide")
@@ -24,8 +25,11 @@ st.title("📈 Real-Time Bitcoin Avg Price Visualization")
 def get_latest_data():
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+    # Convert the timestamp from tuple to datetime
+    df['timestamp'] = df['timestamp'].apply(lambda x: datetime(*x))  # Convert tuple to datetime
     df['avg_price'] = pd.to_numeric(df['avg_price'], errors='coerce')
+    
     return df.tail(120)  # Keep only latest 120 points
 
 # Real-time plotting
