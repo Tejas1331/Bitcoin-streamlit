@@ -57,7 +57,7 @@ while True:
 
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
-        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='red', marker='+', linestyle='None', markersize=2)
+        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='red', marker='x', linestyle='None', markersize=4)
 
         ax.set_xlabel("Timestamp")
         ax.set_ylabel("Bitcoin Price")
