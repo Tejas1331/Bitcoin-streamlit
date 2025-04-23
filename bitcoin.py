@@ -39,7 +39,7 @@ def get_latest_data():
     df = pd.DataFrame(parsed_data, columns=['timestamp', 'actual_price', 'predicted_price'])
 
     # Shift predicted_price to t+2
-    df['predicted_price'] = df['predicted_price'].shift(10)
+    df['predicted_price'] = df['predicted_price'].shift(2)
     
     return df.tail(120)
 
@@ -54,7 +54,7 @@ while True:
 
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
-        ax.plot(df['timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='orange', marker='o', linestyle='None', markersize=6)
+        ax.plot(df['timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='orange', marker='+', linestyle='None', markersize=2)
 
         ax.set_xlabel("Timestamp")
         ax.set_ylabel("Bitcoin Price")
