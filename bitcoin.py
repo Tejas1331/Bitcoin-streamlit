@@ -39,8 +39,8 @@ def get_latest_data():
     df = pd.DataFrame(parsed_data, columns=['timestamp', 'actual_price', 'predicted_price'])
 
     # Shift predicted_price to t+2
-    df['predicted_price'] = df['predicted_price'].shift(2)
-    df['predicted_timestamp'] = df['timestamp'].shift(2)
+    df['predicted_price'] = df['predicted_price'].shift(-2)
+    df['predicted_timestamp'] = df['timestamp'].shift(-2)
 
     
     return df.tail(120)
