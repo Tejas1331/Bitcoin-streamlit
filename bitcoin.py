@@ -32,6 +32,8 @@ def get_latest_data():
             timestamp = datetime(*eval(row[0]))
             actual_price = float(row[1])
             predicted_price = float(row[2])
+            print(actual_price)
+            print(timestamp)
             parsed_data.append([timestamp, actual_price, predicted_price])
         except Exception as e:
             print(f"Skipping row due to error: {e}")
