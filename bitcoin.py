@@ -65,10 +65,16 @@ while True:
         ax.set_title("Bitcoin Actual vs Predicted Price (t+2)")
         ax.grid(True)
         ax.legend()
- 
-        y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
-        y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
-        ax.set_ylim(y_min, y_max)
+
+        if df['predicted_price'] is Null:
+         y_min = min(df['actual_price'].min()) - 20
+         y_max = max(df['actual_price'].max()) + 20
+         ax.set_ylim(y_min, y_max)
+
+        else:
+         y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
+         y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
+         ax.set_ylim(y_min, y_max)
  
         st.pyplot(fig)
  
