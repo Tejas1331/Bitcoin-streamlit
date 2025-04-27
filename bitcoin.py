@@ -63,6 +63,14 @@ while True:
         else:
             predicted_timestamp = last_entry['predicted_timestamp'].values[0]
         actual_price = last_entry['actual_price'].values[0]
+        if if np.isnan(predicted_price):
+            rating = None
+        else:
+            if predicted_price - actual_price >= 0:
+                rating = Buy
+            else:
+                rating = Sell
+                
         actual_timestamp = last_entry['timestamp'].values[0]
 
         with text_placeholder.container():  # This will update the print statements in the same place
@@ -70,6 +78,7 @@ while True:
             st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
             st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
             st.write(f"**Actual Price:** {actual_price}")
+            st.write(f"**Rating:** {rating}")
     except Exception as e:
         st.write(f"Error displaying values: {e}")
 
