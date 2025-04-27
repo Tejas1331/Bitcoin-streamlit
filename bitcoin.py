@@ -69,23 +69,6 @@ while True:
         ax.grid(True)
         ax.legend()
 
-        import numpy as np  # Ensure you have numpy imported
-
-        # Checking for NaN or Inf in 'actual_price' and 'predicted_price'
-        print("Checking for NaN or Inf in 'actual_price' and 'predicted_price' columns")
-        print("NaN values in actual_price:", df['actual_price'].isna().sum())
-        print("NaN values in predicted_price:", df['predicted_price'].isna().sum())
-
-        # Convert Series to NumPy array to check for Inf values
-        print("Inf values in actual_price:", np.isinf(df['actual_price'].values).sum())
-        print("Inf values in predicted_price:", np.isinf(df['predicted_price'].values).sum())
-
-        # Check the min and max values of the columns
-        print("Min and Max of actual_price:", df['actual_price'].min(), df['actual_price'].max())
-        print("Min and Max of predicted_price:", df['predicted_price'].min(), df['predicted_price'].max())
-
-
-
         if df['predicted_price'].isnull().all():
          y_min = df['actual_price'].min() - 20
          y_max = df['actual_price'].max() + 20
