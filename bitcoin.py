@@ -58,7 +58,7 @@ while True:
         predicted_price = last_entry['predicted_price'].values[0]
         predicted_timestamp = last_entry['predicted_timestamp'].values[0]
         actual_price = last_entry['actual_price'].values[0]
-        actual_timestamp = last_entry['timestamp'].values[0].strftime("%Y-%m-%d %H:%M:%S")
+        actual_timestamp = last_entry['timestamp'].values[0]
 
         # Displaying the values
         st.write(f"**Predicted Price:** {predicted_price}")
