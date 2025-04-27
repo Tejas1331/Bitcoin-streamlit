@@ -5,6 +5,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+import numpy as np
 
 # Set Streamlit page config
 st.set_page_config(page_title="Real-time Bitcoin Data", layout="wide")
