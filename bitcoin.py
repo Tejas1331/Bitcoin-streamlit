@@ -44,13 +44,19 @@ def get_latest_data():
     df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
 
     
-    return df.tail(120)
+    return df.tail(120), df.tail(1)
 
 # Real-time plotting
 plot_placeholder = st.empty()
 
 while True:
-    df = get_latest_data()
+    df, last_entry = get_latest_data()
+
+        # Displaying predicted and actual prices for the latest entry
+    st.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
+    st.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
+    st.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
+    st.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
 
     with plot_placeholder.container():
         st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
