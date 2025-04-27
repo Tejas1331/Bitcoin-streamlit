@@ -63,25 +63,41 @@ while True:
         ax.grid(True)
         ax.legend()
 
-        # Check if predicted_price is completely empty or contains only NaN/empty values
+        # Check if actual_price and predicted_price contain NaN or Inf
+        actual_price_min = df['actual_price'].min(skipna=True)
+        actual_price_max = df['actual_price'].max(skipna=True)
+        predicted_price_min = df['predicted_price'].min(skipna=True)
+        predicted_price_max = df['predicted_price'].max(skipna=True)
+
+        print(f"Actual Price Min: {actual_price_min}, Actual Price Max: {actual_price_max}")
+        print(f"Predicted Price Min: {predicted_price_min}, Predicted Price Max: {predicted_price_max}")
+
+        # Handle case where predicted_price is entirely NaN or empty
         if df['predicted_price'].isna().all() or (df['predicted_price'] == '').all():
-            # If the predicted_price column is empty, set a default range
-            y_min = df['actual_price'].min(skipna=True) - 20
-            y_max = df['actual_price'].max(skipna=True) + 20
             print("Predicted Price is empty. Setting limits based on actual_price.")
+            y_min = actual_price_min - 20
+            y_max = actual_price_max + 20
         else:
-            # If predicted_price has values, calculate min and max from both actual_price and predicted_price
-            y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
-            y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
-            print("Predicted Price has values. Setting limits based on both prices.")
+            # Handle case where predicted_price has NaN or Inf values
+            if np.isnan(predicted_price_min) or np.isinf(predicted_price_min):
+                print("Predicted Price Min is NaN or Inf. Falling back to actual price range.")
+                predicted_price_min = actual_price_min
+            if np.isnan(predicted_price_max) or np.isinf(predicted_price_max):
+                print("Predicted Price Max is NaN or Inf. Falling back to actual price range.")
+                predicted_price_max = actual_price_max
+            
+            y_min = min(actual_price_min, predicted_price_min) - 20
+            y_max = max(actual_price_max, predicted_price_max) + 20
 
-        # Ensure that the limits are not NaN or Inf
-        if np.isnan(y_min) or np.isnan(y_max) or np.isinf(y_min) or np.isinf(y_max):
-            # Fallback to a default range if the calculated limits are invalid
-            y_min = df['actual_price'].min(skipna=True) - 20
-            y_max = df['actual_price'].max(skipna=True) + 20
-            print("Fallback to default range due to NaN or Inf values in limits.")
+        # Ensure y_min and y_max are not NaN or Inf
+        if np.isnan(y_min) or np.isinf(y_min):
+            print("y_min is NaN or Inf. Using fallback value based on actual_price.")
+            y_min = actual_price_min - 20
+        if np.isnan(y_max) or np.isinf(y_max):
+            print("y_max is NaN or Inf. Using fallback value based on actual_price.")
+            y_max = actual_price_max + 20
 
+        # Set the y-axis limits
         ax.set_ylim(y_min, y_max)
 
         st.pyplot(fig)
