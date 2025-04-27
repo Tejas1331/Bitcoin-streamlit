@@ -63,8 +63,8 @@ while True:
         # Displaying the values
         st.write(f"**Predicted Price:** {predicted_price}")
         st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
-        st.write(f"**Actual Price:** {actual_price}")
         st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
+        st.write(f"**Actual Price:** {actual_price}")
     except Exception as e:
         st.write(f"Error displaying values: {e}")
 
