@@ -67,9 +67,9 @@ while True:
             rating = None
         else:
             if predicted_price - actual_price >= 0:
-                rating = Buy
+                rating = "Buy"
             else:
-                rating = Sell
+                rating = "Sell"
                 
         actual_timestamp = last_entry['timestamp'].values[0]
 
