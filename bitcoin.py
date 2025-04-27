@@ -24,7 +24,7 @@ st.title("📈 Real-Time Bitcoin: Actual vs Predicted Price (t+2)")
  
  # Function to fetch latest data
 def get_latest_data():
-    data = sheet.get_all_values()[1:]
+    data = sheet.get_all_values()
     parsed_data = []
  
     for row in data:
