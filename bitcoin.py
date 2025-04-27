@@ -28,8 +28,8 @@ def get_latest_data():
 
     for row in data:
         try:
-            # Convert timestamp string to datetime (assuming it's in a standard format)
-            timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")  # Adjust this format based on your sheet
+            # Convert timestamp string to datetime (adjust this format based on your sheet)
+            timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")  # Modify format if needed
             actual_price = float(row[1])
             predicted_price = float(row[2])
             parsed_data.append([timestamp, actual_price, predicted_price])
@@ -49,14 +49,24 @@ plot_placeholder = st.empty()
 while True:
     df, last_entry = get_latest_data()
 
+    # Debugging: Check the last entry data
+    st.write("Debugging last entry:")
+    st.write(last_entry)
+
     # Displaying predicted and actual prices for the latest entry
-    st.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
-    st.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
-    st.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
-    
-    # Format timestamp for display
-    actual_timestamp = last_entry['timestamp'].values[0].strftime("%Y-%m-%d %H:%M:%S")
-    st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
+    try:
+        predicted_price = last_entry['predicted_price'].values[0]
+        predicted_timestamp = last_entry['predicted_timestamp'].values[0]
+        actual_price = last_entry['actual_price'].values[0]
+        actual_timestamp = last_entry['timestamp'].values[0].strftime("%Y-%m-%d %H:%M:%S")
+
+        # Displaying the values
+        st.write(f"**Predicted Price:** {predicted_price}")
+        st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
+        st.write(f"**Actual Price:** {actual_price}")
+        st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
+    except Exception as e:
+        st.write(f"Error displaying values: {e}")
 
     # Update the plot
     with plot_placeholder.container():
