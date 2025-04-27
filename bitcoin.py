@@ -58,17 +58,16 @@ while True:
         df['predicted_price'] = pd.to_numeric(df['predicted_price'], errors='coerce')
 
         # Remove rows where either column is NaN or Inf
-        df = df.replace([np.inf, -np.inf], np.nan).dropna(subset=['actual_price', 'predicted_price'])
+        df = df.replace([np.inf, -np.inf], np.nan).dropna(subset=['actual_price'])
 
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 4))
-        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
         
-        # Check if predicted_price is empty and handle that case
-        if df['predicted_price'].isna().all():
-            ax.plot(df['predicted_timestamp'], np.zeros_like(df['predicted_timestamp']), label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
-        else:
-            ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
+        # Plot actual prices continuously (blue line)
+        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
+
+        # For predicted prices, plot where data is available and leave gaps where no prediction exists
+        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
 
         ax.set_xlabel("Timestamp")
         ax.set_ylabel("Bitcoin Price")
@@ -80,7 +79,7 @@ while True:
         actual_price_min = df['actual_price'].min()
         actual_price_max = df['actual_price'].max()
 
-        # Handle case where predicted_price is empty
+        # Handle case where predicted_price is empty or NaN
         if df['predicted_price'].isna().all():
             y_min = actual_price_min - 20
             y_max = actual_price_max + 20
