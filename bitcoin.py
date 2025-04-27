@@ -52,23 +52,28 @@ plot_placeholder = st.empty()
 while True:
     df = get_latest_data()
 
-    with plot_placeholder.container():
-        st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
+    if not df.empty and df['actual_price'].notna().any():
+        with plot_placeholder.container():
+            st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
 
-        fig, ax = plt.subplots(figsize=(10, 4))
-        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
-        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='red', marker='x', linestyle='None', markersize=4)
+            fig, ax = plt.subplots(figsize=(10, 4))
+            ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
+            ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='orange', marker='+', linestyle='None', markersize=5)
 
-        ax.set_xlabel("Timestamp")
-        ax.set_ylabel("Bitcoin Price")
-        ax.set_title("Bitcoin Actual vs Predicted Price (t+2)")
-        ax.grid(True)
-        ax.legend()
+            ax.set_xlabel("Timestamp")
+            ax.set_ylabel("Bitcoin Price")
+            ax.set_title("Bitcoin Actual vs Predicted Price (t+2)")
+            ax.grid(True)
+            ax.legend()
 
-        y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
-        y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
-        ax.set_ylim(y_min, y_max)
+        # Safe calculation of y-limits
+            y_min = min(df['actual_price'].min(skipna=True), df['predicted_price'].min(skipna=True)) - 20
+            y_max = max(df['actual_price'].max(skipna=True), df['predicted_price'].max(skipna=True)) + 20
+            if pd.notna(y_min) and pd.notna(y_max):
+                ax.set_ylim(y_min, y_max)
 
-        st.pyplot(fig)
+            st.pyplot(fig)
+    else:
+        st.warning("No valid data to plot yet. Waiting for data...")
 
     time.sleep(5)
