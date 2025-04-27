@@ -5,6 +5,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+import numpy as np
 
 # Set Streamlit page config
 st.set_page_config(page_title="Real-time Bitcoin Data", layout="wide")
@@ -62,7 +63,7 @@ while True:
         ax.grid(True)
         ax.legend()
 
-        # Check if predicted_price is completely empty
+        # Check if predicted_price is completely empty or contains only NaN/empty values
         if df['predicted_price'].isna().all() or (df['predicted_price'] == '').all():
             # If the predicted_price column is empty, set a default range
             y_min = df['actual_price'].min(skipna=True) - 20
@@ -72,13 +73,14 @@ while True:
             # If predicted_price has values, calculate min and max from both actual_price and predicted_price
             y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
             y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
+            print("Predicted Price has values. Setting limits based on both prices.")
 
         # Ensure that the limits are not NaN or Inf
-        if pd.isna(y_min) or pd.isna(y_max) or y_min == y_max:
+        if np.isnan(y_min) or np.isnan(y_max) or np.isinf(y_min) or np.isinf(y_max):
             # Fallback to a default range if the calculated limits are invalid
-            y_min = 0
-            y_max = max(df['actual_price'].max(), 1) + 20
-            print("Fallback to default range due to NaN or invalid limits.")
+            y_min = df['actual_price'].min(skipna=True) - 20
+            y_max = df['actual_price'].max(skipna=True) + 20
+            print("Fallback to default range due to NaN or Inf values in limits.")
 
         ax.set_ylim(y_min, y_max)
 
