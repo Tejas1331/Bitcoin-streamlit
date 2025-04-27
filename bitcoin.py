@@ -28,8 +28,8 @@ def get_latest_data():
 
     for row in data:
         try:
-            # Convert timestamp string to datetime
-            timestamp = datetime(*eval(row[0]))
+            # Convert timestamp string to datetime (assuming it's in a standard format)
+            timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")  # Adjust this format based on your sheet
             actual_price = float(row[1])
             predicted_price = float(row[2])
             parsed_data.append([timestamp, actual_price, predicted_price])
@@ -43,21 +43,20 @@ def get_latest_data():
 
     return df.tail(120), df.tail(1)  # Returning last 120 entries and the latest entry
 
-# Placeholder for displaying predicted and actual price info
-text_placeholder = st.empty()
-
 # Real-time plotting and text display
 plot_placeholder = st.empty()
 
 while True:
     df, last_entry = get_latest_data()
 
-    # Update text content for the latest entry
-    text_placeholder.empty()  # Clear previous text content
-    text_placeholder.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
-    text_placeholder.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
-    text_placeholder.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
-    text_placeholder.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
+    # Displaying predicted and actual prices for the latest entry
+    st.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
+    st.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
+    st.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
+    
+    # Format timestamp for display
+    actual_timestamp = last_entry['timestamp'].values[0].strftime("%Y-%m-%d %H:%M:%S")
+    st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
 
     # Update the plot
     with plot_placeholder.container():
