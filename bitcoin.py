@@ -67,8 +67,9 @@ while True:
         ax.legend()
 
         if df['predicted_price'].isnull().all():
-         y_min = min(df['actual_price'].min()) - 20
-         y_max = max(df['actual_price'].max()) + 20
+         y_min = df['actual_price'].min() - 20
+         y_max = df['actual_price'].max() + 20
+
          ax.set_ylim(y_min, y_max)
 
         else:
