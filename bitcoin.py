@@ -41,24 +41,23 @@ def get_latest_data():
     # Shift predicted_price to t+2
     df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
 
-    return df.tail(120), df.tail(1)
+    return df.tail(120), df.tail(1)  # Returning last 120 entries and the latest entry
+
+# Placeholder for displaying predicted and actual price info
+text_placeholder = st.empty()
 
 # Real-time plotting and text display
 plot_placeholder = st.empty()
-text_placeholder = st.empty()  # Empty placeholder for text
-
-# Placeholder for the actual/ predicted text
-text_display = st.empty()
 
 while True:
     df, last_entry = get_latest_data()
 
-    # Update the text content for predicted and actual price on the screen
-    text_display.empty()  # Clear previous text
-    text_display.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
-    text_display.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
-    text_display.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
-    text_display.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
+    # Update text content for the latest entry
+    text_placeholder.empty()  # Clear previous text content
+    text_placeholder.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
+    text_placeholder.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
+    text_placeholder.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
+    text_placeholder.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
 
     # Update the plot
     with plot_placeholder.container():
