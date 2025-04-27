@@ -66,9 +66,9 @@ while True:
         ax.legend()
 
         if df['predicted_price'].isna().all() or (df['predicted_price'] == '').all():
-            y_min = df['actual_price'].min() - 20
+            y_min = df['actual_price'].min(skipna=True) - 20
             print(y_min)
-            y_max = df['actual_price'].max() + 20
+            y_max = df['actual_price'].max(skipna=True) + 20
             print(y_max)
 
         else:
