@@ -63,7 +63,7 @@ while True:
         else:
             predicted_timestamp = last_entry['predicted_timestamp'].values[0]
         actual_price = last_entry['actual_price'].values[0]
-        if if np.isnan(predicted_price):
+        if np.isnan(predicted_price):
             rating = None
         else:
             if predicted_price - actual_price >= 0:
