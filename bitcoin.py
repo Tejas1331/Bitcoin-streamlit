@@ -58,7 +58,7 @@ while True:
     # Displaying predicted and actual prices for the latest entry
     try:
         predicted_price = last_entry['predicted_price'].values[0]
-        if predicted_price == np.nan :
+        if np.isnan(predicted_price):
             predicted_timestamp = np.nan
         else:
             predicted_timestamp = last_entry['predicted_timestamp'].values[0]
