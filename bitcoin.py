@@ -39,31 +39,30 @@ def get_latest_data():
     df = pd.DataFrame(parsed_data, columns=['timestamp', 'actual_price', 'predicted_price'])
 
     # Shift predicted_price to t+2
-    #df['predicted_price'] = df['predicted_price'].shift(0)
-    #df['predicted_timestamp'] = df['timestamp'].shift(0)
     df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
 
-    
     return df.tail(120), df.tail(1)
 
-# Real-time plotting
+# Real-time plotting and text display
 plot_placeholder = st.empty()
+text_placeholder = st.empty()  # Empty placeholder for text
 
 while True:
     df, last_entry = get_latest_data()
 
-        # Displaying predicted and actual prices for the latest entry
-    st.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
-    st.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
-    st.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
-    st.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
+    # Update the text content for predicted and actual price on the screen
+    text_placeholder.empty()  # Clear previous text
+    text_placeholder.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
+    text_placeholder.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
+    text_placeholder.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
+    text_placeholder.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
 
     with plot_placeholder.container():
         st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
 
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
-        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='red', marker='x', linestyle='None', markersize=4)
+        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
 
         ax.set_xlabel("Timestamp")
         ax.set_ylabel("Bitcoin Price")
