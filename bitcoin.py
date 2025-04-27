@@ -39,10 +39,7 @@ def get_latest_data():
     df = pd.DataFrame(parsed_data, columns=['timestamp', 'actual_price', 'predicted_price'])
 
     # Shift predicted_price to t+2
-    #df['predicted_price'] = df['predicted_price'].shift(0)
-    #df['predicted_timestamp'] = df['timestamp'].shift(0)
     df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
-
     
     return df.tail(120)
 
@@ -57,7 +54,7 @@ while True:
 
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
-        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)",  color='red', marker='x', linestyle='None', markersize=4)
+        ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
 
         ax.set_xlabel("Timestamp")
         ax.set_ylabel("Bitcoin Price")
@@ -65,15 +62,24 @@ while True:
         ax.grid(True)
         ax.legend()
 
+        # Check if predicted_price is completely empty
         if df['predicted_price'].isna().all() or (df['predicted_price'] == '').all():
+            # If the predicted_price column is empty, set a default range
             y_min = df['actual_price'].min(skipna=True) - 20
-            print(y_min)
             y_max = df['actual_price'].max(skipna=True) + 20
-            print(y_max)
-
+            print("Predicted Price is empty. Setting limits based on actual_price.")
         else:
+            # If predicted_price has values, calculate min and max from both actual_price and predicted_price
             y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
             y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
+
+        # Ensure that the limits are not NaN or Inf
+        if pd.isna(y_min) or pd.isna(y_max) or y_min == y_max:
+            # Fallback to a default range if the calculated limits are invalid
+            y_min = 0
+            y_max = max(df['actual_price'].max(), 1) + 20
+            print("Fallback to default range due to NaN or invalid limits.")
+
         ax.set_ylim(y_min, y_max)
 
         st.pyplot(fig)
