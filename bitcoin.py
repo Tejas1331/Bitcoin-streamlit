@@ -67,7 +67,9 @@ while True:
 
         if df['predicted_price'].isna().all() or (df['predicted_price'] == '').all():
             y_min = df['actual_price'].min() - 20
+            print(y_min)
             y_max = df['actual_price'].max() + 20
+            print(y_max)
 
         else:
             y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
