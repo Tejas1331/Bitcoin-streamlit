@@ -41,7 +41,7 @@ def get_latest_data():
     # Shift predicted_price to t+2
     #df['predicted_price'] = df['predicted_price'].shift(0)
     #df['predicted_timestamp'] = df['timestamp'].shift(0)
-    df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=1)
+    df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
 
     
     return df.tail(120)
