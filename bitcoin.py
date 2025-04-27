@@ -23,13 +23,13 @@ st.title("📈 Real-Time Bitcoin: Actual vs Predicted Price (t+2)")
 
 # Function to fetch latest data
 def get_latest_data():
-    data = sheet.get_all_values()
+    data = sheet.get_all_values()[1:]
     parsed_data = []
 
     for row in data:
         try:
             # Convert timestamp string to datetime (adjust this format based on your sheet)
-            timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")  # Modify format if needed
+            timestamp = datetime(*eval(row[0]))  # Modify format if needed
             actual_price = float(row[1])
             if row[2] == '':
                 predicted_price = np.nan
