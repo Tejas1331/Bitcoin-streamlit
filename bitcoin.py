@@ -40,6 +40,7 @@ def get_latest_data():
 
     # Shift predicted_price to t+2
     df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
+     df['predicted_price'] = df['predicted_price'].fillna(np.nan)
 
     return df.tail(120), df.tail(1)  # Returning last 120 entries and the latest entry
 
