@@ -31,7 +31,10 @@ def get_latest_data():
             # Convert timestamp string to datetime (adjust this format based on your sheet)
             timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")  # Modify format if needed
             actual_price = float(row[1])
-            predicted_price = float(row[2]) if row[2] else np.nan
+            if row[2] == '':
+                predicted_price = np.nan
+            else:
+                predicted_price = float(row[2])
             parsed_data.append([timestamp, actual_price, predicted_price])
         except Exception as e:
             print(f"Skipping row due to error: {e}")
@@ -49,10 +52,6 @@ plot_placeholder = st.empty()
 
 while True:
     df, last_entry = get_latest_data()
-
-    # Debugging: Check the last entry data
-    st.write("Debugging last entry:")
-    st.write(last_entry)
 
     # Displaying predicted and actual prices for the latest entry
     try:
