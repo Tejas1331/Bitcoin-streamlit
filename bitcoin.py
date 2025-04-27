@@ -50,6 +50,7 @@ def get_latest_data():
 
 # Real-time plotting and text display
 plot_placeholder = st.empty()
+text_placeholder = st.empty()
 
 while True:
     df, last_entry = get_latest_data()
@@ -61,11 +62,11 @@ while True:
         actual_price = last_entry['actual_price'].values[0]
         actual_timestamp = last_entry['timestamp'].values[0]
 
-        # Displaying the values
-        st.write(f"**Predicted Price:** {predicted_price}")
-        st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
-        st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
-        st.write(f"**Actual Price:** {actual_price}")
+        with text_placeholder.container():  # This will update the print statements in the same place
+            st.write(f"**Predicted Price:** {predicted_price}")
+            st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
+            st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
+            st.write(f"**Actual Price:** {actual_price}")
     except Exception as e:
         st.write(f"Error displaying values: {e}")
 
