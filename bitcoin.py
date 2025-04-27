@@ -31,7 +31,7 @@ def get_latest_data():
             # Convert timestamp string to datetime (adjust this format based on your sheet)
             timestamp = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")  # Modify format if needed
             actual_price = float(row[1])
-            predicted_price = float(row[2])
+            predicted_price = float(row[2]) if row[2] else np.nan
             parsed_data.append([timestamp, actual_price, predicted_price])
         except Exception as e:
             print(f"Skipping row due to error: {e}")
