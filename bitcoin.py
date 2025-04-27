@@ -47,16 +47,20 @@ def get_latest_data():
 plot_placeholder = st.empty()
 text_placeholder = st.empty()  # Empty placeholder for text
 
+# Placeholder for the actual/ predicted text
+text_display = st.empty()
+
 while True:
     df, last_entry = get_latest_data()
 
     # Update the text content for predicted and actual price on the screen
-    text_placeholder.empty()  # Clear previous text
-    text_placeholder.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
-    text_placeholder.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
-    text_placeholder.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
-    text_placeholder.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
+    text_display.empty()  # Clear previous text
+    text_display.write(f"**Predicted Price:** {last_entry['predicted_price'].values[0]}")
+    text_display.write(f"**Timestamp for Prediction:** {last_entry['predicted_timestamp'].values[0]}")
+    text_display.write(f"**Actual Price:** {last_entry['actual_price'].values[0]}")
+    text_display.write(f"**Timestamp for Actual Price:** {last_entry['timestamp'].values[0]}")
 
+    # Update the plot
     with plot_placeholder.container():
         st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
 
@@ -76,4 +80,5 @@ while True:
 
         st.pyplot(fig)
 
+    # Delay to simulate real-time updates
     time.sleep(5)
