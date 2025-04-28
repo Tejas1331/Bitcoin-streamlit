@@ -141,7 +141,7 @@ while True:
     with plot_placeholder.container():
         st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
 
-        fig, ax = plt.subplots(figsize=(10, 4))
+        fig, ax = plt.subplots(figsize=(8, 4))  # Adjusted figure size for better fit
         ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
         ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
 
