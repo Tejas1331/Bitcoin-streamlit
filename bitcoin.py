@@ -140,6 +140,7 @@ while True:
 
             with cols[0]:
                 st.subheader("📋 Live Status")
+                st.info("⏳ Waiting for new data update...")
                 st.markdown(f"**Predicted Price:** {predicted_price}")
                 st.markdown(f"**Timestamp for Prediction:** {predicted_timestamp}")
                 st.markdown(f"**Timestamp for Actual Price:** {actual_timestamp}")
