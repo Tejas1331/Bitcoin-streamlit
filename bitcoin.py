@@ -75,7 +75,7 @@ while True:
 
                 with cols[0]:
                     st.subheader("📋 Live Status")
-                    st.info("⏳ Waiting for new data update...")
+                    #st.info("⏳ Waiting for new data update...")
 
                 with cols[1]:
                     st.subheader("📈 Live Plot (Last 120 points, Predicted at t+2)")
