@@ -24,59 +24,52 @@ st.title("📈 Real-Time Bitcoin: Actual vs Predicted Price (t+2)")
 
 # Function to fetch latest data
 def get_latest_data():
-    data = sheet.get_all_values()[1:]
+    data = sheet.get_all_values()[1:]  # Skip header row
     parsed_data = []
 
     for row in data:
         try:
-            timestamp = datetime(*eval(row[0]))  # Modify format if needed
+            timestamp = datetime(*eval(row[0]))  # Assuming the timestamp is a tuple-like string
             actual_price = float(row[1])
-            if row[2] == '':
-                predicted_price = np.nan
-            else:
-                predicted_price = float(row[2])
+            predicted_price = float(row[2]) if row[2] else np.nan
             parsed_data.append([timestamp, actual_price, predicted_price])
         except Exception as e:
             print(f"Skipping row due to error: {e}")
 
     df = pd.DataFrame(parsed_data, columns=['timestamp', 'actual_price', 'predicted_price'])
 
-    # Shift predicted_price to t+2
+    # Shift predicted price by +2 minutes
     df['predicted_timestamp'] = df['timestamp'] + timedelta(minutes=2)
-    df['predicted_price'] = df['predicted_price'].fillna(np.nan)
+    return df.tail(120), df.tail(1)  # Last 120 entries for plot, latest entry separately
 
-    return df.tail(120), df.tail(1)  # Returning last 120 entries and the latest entry
-
-# Real-time plotting and text display
+# Placeholders
 plot_placeholder = st.empty()
 text_placeholder = st.empty()
-status_placeholder = st.empty()  # <-- For showing status like "Waiting for new data..."
+status_placeholder = st.empty()
 
 holdings = []
 previous_rating = None
 total_profit = 0
-last_processed_timestamp = None  # <-- NEW
+last_processed_timestamp = None
 
+# Real-time loop
 while True:
     df, last_entry = get_latest_data()
 
     try:
         predicted_price = last_entry['predicted_price'].values[0]
-        if np.isnan(predicted_price):
-            predicted_timestamp = np.nan
-        else:
-            predicted_timestamp = last_entry['predicted_timestamp'].values[0]
+        predicted_timestamp = last_entry['predicted_timestamp'].values[0]
         actual_price = last_entry['actual_price'].values[0]
         actual_timestamp = last_entry['timestamp'].values[0]
 
-        # Skip if already processed
+        # Skip if no new data
         if actual_timestamp == last_processed_timestamp:
             with status_placeholder.container():
                 st.info("⏳ Waiting for new data update...")
             time.sleep(5)
-            continue  # Skip to next loop
+            continue
 
-        # Process only new data
+        # Determine rating
         if np.isnan(predicted_price):
             rating = None
         else:
@@ -87,18 +80,14 @@ while True:
                 previous_rating = rating
 
             if rating == previous_rating:
-                # Continue adding to holdings
-                if rating == "Buy":
-                    holdings.append(actual_price)
-                else:  # rating == "Sell"
-                    holdings.append(-actual_price)
+                # Continue current holdings
+                holdings.append(actual_price if rating == "Buy" else -actual_price)
             else:
-                # Rating changed → Book profit or loss
+                # Rating changed → Book profits/losses
                 if holdings:
                     units = len(holdings)
-                    avg_entry_price = sum(holdings) / units  # Net entry price
+                    avg_entry_price = sum(holdings) / units
 
-                    # Exit at current actual price
                     if previous_rating == "Buy":
                         # Sell all buys
                         profit = (actual_price * units) - sum(holdings)
@@ -109,20 +98,20 @@ while True:
                     total_profit += profit
 
                 # Reset holdings for new rating
-                holdings = []
-                if rating == "Buy":
-                    holdings.append(actual_price)
-                else:
-                    holdings.append(-actual_price)
-
+                holdings = [actual_price if rating == "Buy" else -actual_price]
                 previous_rating = rating
 
         # Update last processed timestamp
         last_processed_timestamp = actual_timestamp
 
-        # Display updated values in compact format
+        # Display information
         with text_placeholder.container():
-            st.write(f"**Predicted Price:** {predicted_price}  |  **Rating:** {rating}  |  **Actual Price:** {actual_price}")
+            st.write(f"**Predicted Price:** {predicted_price}")
+            st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
+            st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
+            st.write(f"**Actual Price:** {actual_price}")
+            st.write(f"**Rating:** {rating}")
+            st.write(f"**Current Holdings:** {holdings}")
             st.write(f"**Total Profit/Loss:** {total_profit:.2f}")
 
         with status_placeholder.container():
@@ -132,19 +121,19 @@ while True:
         with text_placeholder.container():
             st.error(f"Error displaying values: {e}")
 
-    # Update the plot with more compact settings
+    # Update plot
     with plot_placeholder.container():
         st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
 
-        fig, ax = plt.subplots(figsize=(8, 3))  # Smaller plot for compactness
-        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=1.5)
+        fig, ax = plt.subplots(figsize=(10, 4))
+        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
         ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
 
-        ax.set_xlabel("Timestamp", fontsize=8)
-        ax.set_ylabel("Price", fontsize=8)
-        ax.set_title("Bitcoin: Actual vs Predicted (t+2)", fontsize=9)
+        ax.set_xlabel("Timestamp")
+        ax.set_ylabel("Bitcoin Price")
+        ax.set_title("Bitcoin Actual vs Predicted Price (t+2)")
         ax.grid(True)
-        ax.legend(fontsize=8)
+        ax.legend()
 
         y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
         y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
@@ -152,5 +141,5 @@ while True:
 
         st.pyplot(fig)
 
-    # Delay to simulate real-time updates
+    # Delay for next iteration
     time.sleep(5)
