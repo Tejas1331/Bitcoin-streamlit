@@ -108,10 +108,10 @@ while True:
 
                 # Reset holdings for new rating
                 holdings = []
-                #if rating == "Buy":
-                #    holdings.append(actual_price)
-                #else:
-                #    holdings.append(-actual_price)
+                if rating == "Buy":
+                    holdings.append(actual_price)
+                else:
+                    holdings.append(-actual_price)
 
                 previous_rating = rating
 
