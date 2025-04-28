@@ -29,7 +29,6 @@ def get_latest_data():
 
     for row in data:
         try:
-            # Convert timestamp string to datetime (adjust this format based on your sheet)
             timestamp = datetime(*eval(row[0]))  # Modify format if needed
             actual_price = float(row[1])
             if row[2] == '':
@@ -51,15 +50,16 @@ def get_latest_data():
 # Real-time plotting and text display
 plot_placeholder = st.empty()
 text_placeholder = st.empty()
+status_placeholder = st.empty()  # <-- For showing status like "Waiting for new data..."
 
 holdings = []
 previous_rating = None
 total_profit = 0
+last_processed_timestamp = None  # <-- NEW
 
 while True:
     df, last_entry = get_latest_data()
 
-    # Displaying predicted and actual prices for the latest entry
     try:
         predicted_price = last_entry['predicted_price'].values[0]
         if np.isnan(predicted_price):
@@ -67,21 +67,23 @@ while True:
         else:
             predicted_timestamp = last_entry['predicted_timestamp'].values[0]
         actual_price = last_entry['actual_price'].values[0]
+        actual_timestamp = last_entry['timestamp'].values[0]
+
+        # Skip if already processed
+        if actual_timestamp == last_processed_timestamp:
+            with status_placeholder.container():
+                st.info("⏳ Waiting for new data update...")
+            time.sleep(5)
+            continue  # Skip to next loop
+
+        # Process only new data
         if np.isnan(predicted_price):
             rating = None
         else:
-            if predicted_price - actual_price >= 0:
-                rating = "Buy"
-            else:
-                rating = "Sell"
-                
-        actual_timestamp = last_entry['timestamp'].values[0]
+            rating = "Buy" if (predicted_price - actual_price) >= 0 else "Sell"
 
-
-        
         if rating is not None:
             if previous_rating is None:
-                # First time setting previous_rating
                 previous_rating = rating
 
             if rating == previous_rating:
@@ -115,7 +117,11 @@ while True:
 
                 previous_rating = rating
 
-        with text_placeholder.container():  # This will update the print statements in the same place
+        # Update last processed timestamp
+        last_processed_timestamp = actual_timestamp
+
+        # Display updated values
+        with text_placeholder.container():
             st.write(f"**Predicted Price:** {predicted_price}")
             st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
             st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
@@ -123,8 +129,13 @@ while True:
             st.write(f"**Rating:** {rating}")
             st.write(f"**Current Holdings:** {holdings}")
             st.write(f"**Total Profit/Loss:** {total_profit:.2f}")
+
+        with status_placeholder.container():
+            st.success("✅ New data processed.")
+
     except Exception as e:
-        st.write(f"Error displaying values: {e}")
+        with text_placeholder.container():
+            st.error(f"Error displaying values: {e}")
 
     # Update the plot
     with plot_placeholder.container():
