@@ -120,14 +120,9 @@ while True:
         # Update last processed timestamp
         last_processed_timestamp = actual_timestamp
 
-        # Display updated values
+        # Display updated values in compact format
         with text_placeholder.container():
-            st.write(f"**Predicted Price:** {predicted_price}")
-            st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
-            st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
-            st.write(f"**Actual Price:** {actual_price}")
-            st.write(f"**Rating:** {rating}")
-            st.write(f"**Current Holdings:** {holdings}")
+            st.write(f"**Predicted Price:** {predicted_price}  |  **Rating:** {rating}  |  **Actual Price:** {actual_price}")
             st.write(f"**Total Profit/Loss:** {total_profit:.2f}")
 
         with status_placeholder.container():
@@ -137,19 +132,19 @@ while True:
         with text_placeholder.container():
             st.error(f"Error displaying values: {e}")
 
-    # Update the plot
+    # Update the plot with more compact settings
     with plot_placeholder.container():
         st.subheader("Live Plot (Last 120 points, Predicted at t+2)")
 
-        fig, ax = plt.subplots(figsize=(8, 4))  # Adjusted figure size for better fit
-        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=2)
+        fig, ax = plt.subplots(figsize=(8, 3))  # Smaller plot for compactness
+        ax.plot(df['timestamp'], df['actual_price'], label="Actual Price", color='blue', linewidth=1.5)
         ax.plot(df['predicted_timestamp'], df['predicted_price'], label="Predicted Price (t+2)", color='red', marker='x', linestyle='None', markersize=4)
 
-        ax.set_xlabel("Timestamp")
-        ax.set_ylabel("Bitcoin Price")
-        ax.set_title("Bitcoin Actual vs Predicted Price (t+2)")
+        ax.set_xlabel("Timestamp", fontsize=8)
+        ax.set_ylabel("Price", fontsize=8)
+        ax.set_title("Bitcoin: Actual vs Predicted (t+2)", fontsize=9)
         ax.grid(True)
-        ax.legend()
+        ax.legend(fontsize=8)
 
         y_min = min(df['actual_price'].min(), df['predicted_price'].min(skipna=True)) - 20
         y_max = max(df['actual_price'].max(), df['predicted_price'].max(skipna=True)) + 20
