@@ -52,6 +52,10 @@ def get_latest_data():
 plot_placeholder = st.empty()
 text_placeholder = st.empty()
 
+holdings = []
+previous_rating = None
+total_profit = 0
+
 while True:
     df, last_entry = get_latest_data()
 
@@ -73,12 +77,52 @@ while True:
                 
         actual_timestamp = last_entry['timestamp'].values[0]
 
+
+        
+        if rating is not None:
+            if previous_rating is None:
+                # First time setting previous_rating
+                previous_rating = rating
+
+            if rating == previous_rating:
+                # Continue adding to holdings
+                if rating == "Buy":
+                    holdings.append(actual_price)
+                else:  # rating == "Sell"
+                    holdings.append(-actual_price)
+            else:
+                # Rating changed → Book profit or loss
+                if holdings:
+                    units = len(holdings)
+                    avg_entry_price = sum(holdings) / units  # Net entry price
+
+                    # Exit at current actual price
+                    if previous_rating == "Buy":
+                        # Sell all buys
+                        profit = (actual_price * units) - sum(holdings)
+                    else:
+                        # Buy back all sells
+                        profit = sum(holdings) + (actual_price * units)
+
+                    total_profit += profit
+
+                # Reset holdings for new rating
+                holdings = []
+                #if rating == "Buy":
+                #    holdings.append(actual_price)
+                #else:
+                #    holdings.append(-actual_price)
+
+                previous_rating = rating
+
         with text_placeholder.container():  # This will update the print statements in the same place
             st.write(f"**Predicted Price:** {predicted_price}")
             st.write(f"**Timestamp for Prediction:** {predicted_timestamp}")
             st.write(f"**Timestamp for Actual Price:** {actual_timestamp}")
             st.write(f"**Actual Price:** {actual_price}")
             st.write(f"**Rating:** {rating}")
+            st.write(f"**Current Holdings:** {holdings}")
+            st.write(f"**Total Profit/Loss:** {total_profit:.2f}")
     except Exception as e:
         st.write(f"Error displaying values: {e}")
 
