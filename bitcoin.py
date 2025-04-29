@@ -51,9 +51,17 @@ def get_latest_data():
 # Real-time plotting and text display
 plot_placeholder = st.empty()
 
-holdings = []
-previous_rating = None
-total_profit = 0
+#holdings = []
+#previous_rating = None
+#total_profit = 0
+
+if 'holdings' not in st.session_state:
+    st.session_state.holdings = []
+if 'previous_rating' not in st.session_state:
+    st.session_state.previous_rating = None
+if 'total_profit' not in st.session_state:
+    st.session_state.total_profit = 0
+    
 last_processed_timestamp = None
 
 while True:
@@ -104,33 +112,33 @@ while True:
             rating = "Buy" if (predicted_price - actual_price) >= 0 else "Sell"
 
         if rating is not None:
-            if previous_rating is None:
-                previous_rating = rating
+            if st.session_state.previous_rating is None:
+                st.session_state.previous_rating = rating
 
-            if rating == previous_rating:
+            if rating == st.session_state.previous_rating:
                 if rating == "Buy":
-                    holdings.append(actual_price)
+                    st.session_state.holdings.append(actual_price)
                 else:
-                    holdings.append(-actual_price)
+                    st.session_state.holdings.append(-actual_price)
             else:
-                if holdings:
-                    units = len(holdings)
-                    avg_entry_price = sum(holdings) / units
+                if st.session_state.holdings:
+                    units = len(st.session_state.holdings)
+                    avg_entry_price = sum(st.session_state.holdings) / units
 
-                    if previous_rating == "Buy":
-                        profit = (actual_price * units) - sum(holdings)
+                    if st.session_state.previous_rating == "Buy":
+                        profit = (actual_price * units) - sum(st.session_state.holdings)
                     else:
-                        profit = sum(holdings) + (actual_price * units)
+                        profit = sum(st.session_state.holdings) + (actual_price * units)
 
-                    total_profit += profit
+                    st.session_state.total_profit += profit
 
-                holdings = []
+                st.session_state.holdings = []
                 if rating == "Buy":
-                    holdings.append(actual_price)
+                    st.session_state.holdings.append(actual_price)
                 else:
-                    holdings.append(-actual_price)
+                    st.session_state.holdings.append(-actual_price)
 
-                previous_rating = rating
+                st.session_state.previous_rating = rating
 
         last_processed_timestamp = actual_timestamp
 
@@ -150,9 +158,9 @@ while True:
                     st.error(f"**Rating:** {rating}")
                 else:
                     st.markdown(f"**Rating:** {rating}")
-                holdings = [round(float(h), 2) for h in holdings]
-                st.markdown(f"**Current Holdings:** {holdings}")
-                st.markdown(f"**Total Profit/Loss:** {total_profit:.2f}")
+                st.session_state.holdings = [round(float(h), 2) for h in st.session_state.holdings]
+                st.markdown(f"**Current Holdings:** {st.session_state.holdings}")
+                st.markdown(f"**Total Profit/Loss:** {st.session_state.total_profit:.2f}")
                 if np.isnan(predicted_price):
                     st.info("⏳ Waiting for new data update...")
                 else:
