@@ -140,7 +140,6 @@ while True:
 
             with cols[0]:
                 st.subheader("📋 Live Status")
-                st.info("⏳ Waiting for new data update...")
                 st.markdown(f"**Predicted Price:** {predicted_price}")
                 st.markdown(f"**Timestamp for Prediction:** {predicted_timestamp}")
                 st.markdown(f"**Timestamp for Actual Price:** {actual_timestamp}")
@@ -148,7 +147,10 @@ while True:
                 st.markdown(f"**Rating:** {rating}")
                 st.markdown(f"**Current Holdings:** {holdings}")
                 st.markdown(f"**Total Profit/Loss:** {total_profit:.2f}")
-                st.success("✅ New data processed.")
+                if np.isnan(predicted_price):
+                    st.info("⏳ Waiting for new data update...")
+                else:
+                    st.success("✅ New data processed.")
 
             with cols[1]:
                 st.subheader("📈 Live Plot (Last 120 points, Predicted at t+2)")
