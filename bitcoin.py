@@ -150,6 +150,7 @@ while True:
                     st.error(f"**Rating:** {rating}")
                 else:
                     st.markdown(f"**Rating:** {rating}")
+                holdings = [round(float(h), 2) for h in holdings]
                 st.markdown(f"**Current Holdings:** {holdings}")
                 st.markdown(f"**Total Profit/Loss:** {total_profit:.2f}")
                 if np.isnan(predicted_price):
